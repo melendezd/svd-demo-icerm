@@ -1,13 +1,14 @@
 mkdir -p ~/.streamlit/
 
-echo "\
-(general)\n\
-email = \"davidmelendez@knights.ucf.edu\"\n\
+printf "\
+[general]\n\
+email = \"\"\
 " > ~/.streamlit/credentials.toml
 
-echo "\
+printf "\
 [server]\n\
-headless = true\n\
+headless=true\n\
 enableCORS=false\n\
+enableXsrfProtection=false\n\
 port=$PORT\n\
 " > ~/.streamlit/config.toml
