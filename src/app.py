@@ -33,9 +33,6 @@ def main() -> None:
     current_demo = demos.demo_dict[demo_selection]
     current_demo.display()
 
-    #raccoon = matl.Image.load('resources/images/raccoon.jpg')
-    #raccoon.compute(lambda arr: arr * (x / 100)).display()
-
 
 if __name__ == '__main__':
     main()
