@@ -9,15 +9,16 @@ import numpy as np  # type: ignore
 import streamlit as st  # type: ignore
 
 T = TypeVar("T")
-#S = TypeVar("S", bound=IMatrixLike)
 S = TypeVar("S")
-#U = TypeVar("S")
 class IMatrixLike(Generic[T, S]):
     def to_matrix(self) -> NDArray[(Any, Any), T]:
         raise NotImplementedError
 
-    def compute(self, fun: Callable[[NDArray], NDArray]) -> S:
+    def compute(self, fun: Callable[[NDArray[(Any, Any), T]], NDArray[(Any, Any), T]]) -> S:
         return self.from_matrix(fun(self.to_matrix()))
+
+    def extract(self, fun: Callable[[NDArray[(Any, Any), T]], Any]) -> Any:
+        return fun(self.to_matrix())
 
     @staticmethod
     def from_matrix(obj: NDArray[(Any,  Any), T], **kwargs: Any) -> S:
@@ -30,6 +31,7 @@ class IDisplayable:
 
 class ILoadable(Generic[T]):
     @staticmethod
+    @st.cache
     def load(path: str) -> T:
         raise NotImplementedError
 
