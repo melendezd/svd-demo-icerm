@@ -1,22 +1,26 @@
 from __future__ import annotations
 
-from nptyping import NDArray, UInt8
-from typing import Any, Callable
+from nptyping import NDArray, UInt8  # type: ignore
+from typing import Any, Callable, TypeVar, Generic
 
-import PIL.Image
-import numpy as np
+import PIL.Image  # type: ignore
+import numpy as np  # type: ignore
 
-import streamlit as st
+import streamlit as st  # type: ignore
 
-class IMatrixLike:
-    def to_matrix(self) -> NDArray:
+T = TypeVar("T")
+#S = TypeVar("S", bound=IMatrixLike)
+S = TypeVar("S")
+#U = TypeVar("S")
+class IMatrixLike(Generic[T, S]):
+    def to_matrix(self) -> NDArray[(Any, Any), T]:
         raise NotImplementedError
 
-    def compute(self, fun: Callable[NDArray, NDArray]) -> IMatrixLike:
-        return from_matrix(fun(to_matrix(self)))
+    def compute(self, fun: Callable[[NDArray], NDArray]) -> S:
+        return self.from_matrix(fun(self.to_matrix()))
 
     @staticmethod
-    def from_matrix(obj: NDArray[(Any,  Any)], **kwargs) -> IMatrixLike:
+    def from_matrix(obj: NDArray[(Any,  Any), T], **kwargs: Any) -> S:
         raise NotImplementedError
 
 
@@ -24,9 +28,19 @@ class IDisplayable:
     def display(self) -> None:
         raise NotImplementedError
 
+class ILoadable(Generic[T]):
+    @staticmethod
+    def load(path: str) -> T:
+        raise NotImplementedError
 
-class Image(IMatrixLike, IDisplayable):
-    def __init__(self, ndim: UInt8, img: NDArray[(Any, Any, ndim), UInt8]):
+
+class MatrixLikeDisplayableLoadable(Generic[T, S], IMatrixLike[T, S], ILoadable[S],
+                                    IDisplayable):
+    pass
+
+
+class Image(MatrixLikeDisplayableLoadable[UInt8, 'Image']):
+    def __init__(self, ndim: UInt8, img: NDArray[(Any, Any, Any), UInt8]):
         self.img = img
         self.ndim = ndim
 
@@ -36,17 +50,7 @@ class Image(IMatrixLike, IDisplayable):
         '''
         return self.img.reshape(self.img.shape[0], self.img.shape[1] * self.ndim)
 
-    @staticmethod
-    def from_matrix(img_matrix: NDArray[(Any, Any), UInt8], **kwargs) -> Image:
-        '''
-        Converts a 2D array to an image given the number of channels as ndim in kwargs
-        '''
-        ndim: UInt8 = kwargs.get('ndim')
-        return Image(ndim,
-                     img_matrix.reshape(img_matrix.shape[0],
-                                        img_matrix.shape[1]//ndim, ndim))
-
-    def compute(self, fun: Callable[NDArray, NDArray]) -> Image:
+    def compute(self, fun: Callable[[NDArray], NDArray]) -> Image:
         '''
         Applies a function to the flattened version of an image, rounds clips the
         resulting values between 0 and 255, and returns the resulting image
@@ -54,6 +58,17 @@ class Image(IMatrixLike, IDisplayable):
         fun_img_mat = fun(self.to_matrix())
         fun_img_mat_normalized = np.clip(fun_img_mat, 0, 255).astype(np.uint8)
         return Image.from_matrix(fun_img_mat_normalized, ndim=self.ndim)
+
+    @staticmethod
+    def from_matrix(obj: NDArray[(Any, Any), UInt8], **kwargs: Any) -> Image:
+        '''
+        Converts a 2D array to an image given the number of channels as ndim in kwargs
+        '''
+        ndim: UInt8 = kwargs.get('ndim')
+        return Image(ndim,
+                     obj.reshape(obj.shape[0],
+                                        obj.shape[1]//ndim, ndim))
+
 
     def display(self):
         '''
