@@ -30,6 +30,7 @@ def main() -> None:
             )
         )
 
+    # Display demo
     current_demo = demos.demo_dict[demo_selection]
     current_demo.display()
 
