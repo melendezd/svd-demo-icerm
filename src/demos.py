@@ -22,9 +22,8 @@ class DemoName(Enum):
     """Identifiers for SVD demo pages"""
     image_compression = "Image Compression"
     audio_compression = "Audio Compression"
-    video_bg          = "Video Background Extraction"
-    watermarking      = "Digital Watermarking"
-
+    #video_bg          = "Video Background Extraction"
+    #watermarking      = "Digital Watermarking"
 
 class Demo(matl.IDisplayable):
     pass
