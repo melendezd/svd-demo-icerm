@@ -49,7 +49,8 @@ class SVDDemo(Generic[M], Demo):
 
         example = self.example_dict[selection]
         example_rank: int = int(example.extract(lambda m: numpy.linalg.matrix_rank(m)))
-        print(example_rank)
+
+        randomized = st.sidebar.checkbox(label="Randomized SVD", value=False)
 
         chosen_rank = st.sidebar.slider(\
             label="Compression Rank",
@@ -63,7 +64,13 @@ class SVDDemo(Generic[M], Demo):
         example.display()
 
         st.subheader("Compressed (Rank %d)" % chosen_rank)
-        example.compute(lambda mat: svdt.rank_k_approx(mat, rank=chosen_rank)).display()
+
+        if randomized:
+            svd_fun = lambda mat: svdt.rank_k_approx(mat, rank=chosen_rank, mode='r')
+        else:
+            svd_fun = lambda mat: svdt.rank_k_approx(mat, rank=chosen_rank)
+
+        example.compute(svd_fun).display()
 
 # Dictionary mapping image names to file paths
 image_dict = {'Raccoon': IMAGE_PATH + 'raccoon.jpg',
