@@ -69,8 +69,12 @@ class SVDDemo(Generic[M], Demo):
 image_dict = {'Raccoon': IMAGE_PATH + 'raccoon.jpg',
               'Fox': IMAGE_PATH + 'fox.jpg'
              }
+audio_dict = {'Antidisestablishmentarianism': AUDIO_PATH + 'anti.wav'
+             }
 
 image_compression_demo = SVDDemo[matl.Image](matl.Image, image_dict)
+audio_compression_demo = SVDDemo[matl.Audio](matl.Audio, audio_dict)
 
 # Dictionary mapping demo selections to demos
-demo_dict: Dict[DemoName, Demo] = {DemoName.image_compression: image_compression_demo}
+demo_dict: Dict[DemoName, Demo] = {DemoName.image_compression: image_compression_demo,
+                                   DemoName.audio_compression: audio_compression_demo}
