@@ -10,7 +10,9 @@ import streamlit as st  #type: ignore
 
 @st.cache
 def svd(matrix: NDArray[(Any, Any), Any]) -> Any:
-    return np.linalg.svd(matrix.astype(np.float64), full_matrices=False)
+    if np.issubdtype(matrix.dtype, np.integer):
+        matrix = matrix.astype(np.float64)
+    return np.linalg.svd(matrix, full_matrices=False)
 
 
 '''
@@ -19,7 +21,9 @@ Computes the randomized singular value decomposition of the input matrix.
 def randomized_svd(matrix: NDArray[(Any, Any), Any], rank: int, oversample: int=10,
                    power_iterations: int = 0, full_matrices: bool = False)\
                    -> Any:
-    matrix = matrix.astype(np.float64)
+
+    if np.issubdtype(matrix.dtype, np.integer):
+        matrix = matrix.astype(np.float64)
     rows, columns = matrix.shape
 
     # Create a random projection matrix
@@ -50,7 +54,8 @@ Computes the compressed singular value decomposition of the input matrix.
 def compressed_svd(matrix: NDArray[(Any, Any), Any], rank: int, oversample:int=5,
                    density:float=3) -> Any:
     rows, cols = matrix.shape
-    matrix = matrix.astype(np.float64)
+    if np.issubdtype(matrix.dtype, np.integer):
+        matrix = matrix.astype(np.float64)
 
     if density == None:
         test_matrix = np.random.rand(rank + oversample, rows)
@@ -97,7 +102,8 @@ def rank_k_approx(matrix: NDArray[(Any, Any), Any], rank:int=None,
                   mode='deterministic', oversample:int=10,
                   power_iterations=0) -> NDArray[(Any, Any), Float64]:
 
-    matrix = matrix.astype(np.float64)
+    if np.issubdtype(matrix.dtype, np.integer):
+        matrix = matrix.astype(np.float64)
     mode_letter = mode[0]
 
     if mode_letter == 'd':
