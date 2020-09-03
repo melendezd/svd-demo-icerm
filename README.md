@@ -1,5 +1,6 @@
 # Singular Value Decomposition Demonstrations 
-A Streamlit web app demonstrating applications of the Singular Value Decomposition (SVD), a useful matrix decomposition from linear algbera. The app is hosted on Heroku [here](svd-demo-icerm.herokuapp.com). 
+#### [Click here to view the web app!](http://svd-demo-icerm.herokuapp.com/)
+A Streamlit web app demonstrating applications of the Singular Value Decomposition (SVD), a useful matrix decomposition from linear algbera.
 
 ## Current Features
 - Compute and display low-rank approximations of:
